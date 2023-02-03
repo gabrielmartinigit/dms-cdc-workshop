@@ -17,7 +17,7 @@ Connect to the bastion with **EC2 Instance Connect** and execute the commands be
 ```bash
 sudo yum update -y
 sudo yum install mariadb -y
-wget https://raw.githubusercontent.com/gabrielmartinigit/dms-cdc-workshop/sql/datasample.sql
+wget https://raw.githubusercontent.com/gabrielmartinigit/dms-cdc-workshop/main/sql/datasample.sql
 mysql -h <host> -P 3306 -u <user> -p
 source /home/ec2-user/datasample.sql
 ```
