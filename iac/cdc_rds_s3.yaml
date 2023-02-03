@@ -1,0 +1,70 @@
+Parameters:
+  RDSUsername:
+    Type: String
+    Default: admin
+  RDSPassword:
+    Type: String
+    Default: Workshop_123
+
+Resources:
+  ## Destination S3 ##
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join [-, [!Ref "AWS::StackName", !Ref "AWS::AccountId"]]
+
+  ## Bastion ##
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Bastion security group for SSH
+      GroupName: bastion-ssh-sg
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  BastionEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-0aa7d40eeae50c9a9"
+      InstanceType: "t3.micro"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref BastionSecurityGroup
+
+  ## Origin RDS ##
+  RDSParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      DBParameterGroupName: mysql-cdc-parametergroup
+      Description: ParameterGroup to change binlog format to row
+      Family: mysql8.0
+      Parameters:
+        binlog_format: ROW
+
+  RDSSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      GroupDescription: Ingress for RDS Instance
+      DBSecurityGroupIngress:
+        - EC2SecurityGroupName: bastion-ssh-sg
+
+  RDSInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceClass: "db.m5.large"
+      StorageType: gp2
+      AllocatedStorage: 500
+      Engine: mysql
+      EngineVersion: "8.0.26"
+      MasterUsername: !Ref RDSUsername
+      MasterUserPassword: !Ref RDSPassword
+      DBParameterGroupName: !Ref RDSParameterGroup
+      DBSecurityGroups:
+        - !Ref RDSSecurityGroup
+      PubliclyAccessible: False
+      BackupRetentionPeriod: 1
