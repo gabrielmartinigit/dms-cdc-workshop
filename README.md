@@ -23,6 +23,9 @@ sudo yum install mariadb -y
 wget https://raw.githubusercontent.com/gabrielmartinigit/dms-cdc-workshop/main/sql/datasample.sql
 mysql -h <host> -P 3306 -u <user> -p
 source /home/ec2-user/datasample.sql
+SHOW BINARY LOGS;
+call mysql.rds_show_configuration;
+call mysql.rds_set_configuration('binlog retention hours', 24);
 ```
 
 ```sql
