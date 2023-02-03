@@ -1,4 +1,6 @@
 Parameters:
+  VpcId:
+    Type: String
   RDSUsername:
     Type: String
     Default: admin
@@ -19,6 +21,7 @@ Resources:
     Properties:
       GroupDescription: Bastion security group for SSH
       GroupName: bastion-ssh-sg
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
