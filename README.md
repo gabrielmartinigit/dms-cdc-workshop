@@ -3,6 +3,9 @@
 _Notes:_
 
 - Run in the N. Virginia region (us-east-1);
+- Open lab account: https://dashboard.eventengine.run/login
+- Get event hash
+- Use one-time password
 
 ## Running CloudFormation
 
